@@ -121,6 +121,7 @@ class Bomb:
     爆弾に関するクラス
     """
     def __init__(self, color: tuple[int, int, int], rad: int):
+        
         """
         引数に基づき爆弾円Surfaceを生成する
         引数1 color:爆弾円の色タプル
@@ -174,8 +175,11 @@ def main():
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
+                fonto = pg.font.Font(None, 80)
+                txt = fonto.render("Game Over", True, (255, 0, 0))
+                screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
                 pg.display.update()
-                time.sleep(1)
+                time.sleep(3)
                 return
             
         for j, bomb in enumerate(bombs):
