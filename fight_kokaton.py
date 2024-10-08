@@ -156,6 +156,9 @@ class Score:
     """
 
     def __init__(self):
+        """
+        スコアを表示させるSurfaceを生成する
+        """
         self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
         self.score = 0
         self.img = self.fonto.render(f"スコア:{self.get_score()}", 0, (0, 0, 255))
@@ -163,14 +166,24 @@ class Score:
         self.rct.center = 100, HEIGHT -50
     
     def update(self, screen: pg.Surface):
+        """
+        スコアを表示する
+        """
         self.img = self.fonto.render(f"スコア:{self.get_score()}", 0, (0, 0, 255))
         screen.blit(self.img, self.rct)
         
     
     def plus_score(self):
+        """
+        呼び出された時スコアを+1する
+        """
         self.score += 1
+        time.sleep(0.00001)
 
     def get_score(self):
+        """
+        現在のスコアを表示する
+        """
         return self.score
 
 def main():
