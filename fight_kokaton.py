@@ -120,6 +120,7 @@ class Bomb:
     爆弾に関するクラス
     """
     def __init__(self, color: tuple[int, int, int], rad: int):
+        
         """
         引数に基づき爆弾円Surfaceを生成する
         引数1 color:爆弾円の色タプル
