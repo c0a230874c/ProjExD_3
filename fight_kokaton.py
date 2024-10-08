@@ -163,6 +163,8 @@ class Score:
         self.rct.center = 100, HEIGHT -50
     
     def update(self, screen: pg.Surface):
+        """
+        引数:screen:画面Surface"""
         self.img = self.fonto.render(f"スコア:{self.get_score()}", 0, (0, 0, 255))
         screen.blit(self.img, self.rct)
         
@@ -179,7 +181,8 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
     score = Score()
-    beam = None
+    beams = []
+    # beam = None
     # bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
@@ -191,7 +194,7 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)   
+                beams.append(Beam(bird))
 
         screen.blit(bg_img, [0, 0])
 
@@ -206,25 +209,33 @@ def main():
                 time.sleep(3)
                 return
             
+        for beam in beams:
+            if check_bound(beam.rct)[0] == False or check_bound(beam.rct)[1] == False:
+                beam = None
+            
         for j, bomb in enumerate(bombs):
-            if beam is not None:
-                if beam.rct.colliderect(bomb.rct):
-                    beam,bombs[j] = None, None
-                    bird.change_img(6,screen)
-                    score.plus_score()
-                    pg.display.update()
-        
+            for i, beam in enumerate(beams):
+                if beam is not None and bomb is not None:
+                    if beam.rct.colliderect(bomb.rct):
+                        beams[i],bombs[j] = None, None
+                        bird.change_img(6,screen)
+                        score.plus_score()
+                        pg.display.update()
+                            
+        beams = [beam for beam in beams if beam is not None]
         bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         score.update(screen)
 
-        if beam is not None:
+        for beam in beams:
             beam.update(screen)   
 
         for bomb in bombs:
             bomb.update(screen)
+
+        print(len(beams))
 
         pg.display.update()
         tmr += 1
