@@ -19,8 +19,10 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     yoko, tate = True, True
     if obj_rct.left < 0 or WIDTH < obj_rct.right:
         yoko = False
+
     if obj_rct.top < 0 or HEIGHT < obj_rct.bottom:
         tate = False
+        
     return yoko, tate
 
 
@@ -72,13 +74,17 @@ class Bird:
         引数2 screen:画面Surface
         """
         sum_mv = [0, 0]
+
         for k, mv in __class__.delta.items():
             if key_lst[k]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+
         self.rct.move_ip(sum_mv)
+
         if check_bound(self.rct) != (True, True):
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
+
         if not (sum_mv[0] == 0 and sum_mv[1] == 0):
             self.img = __class__.imgs[tuple(sum_mv)]
         screen.blit(self.img, self.rct)
@@ -134,8 +140,10 @@ class Bomb:
         yoko, tate = check_bound(self.rct)
         if not yoko:
             self.vx *= -1
+
         if not tate:
             self.vy *= -1
+
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
@@ -149,27 +157,39 @@ def main():
     bomb = Bomb((255, 0, 0), 10)
     clock = pg.time.Clock()
     tmr = 0
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beam = Beam(bird)   
+
         screen.blit(bg_img, [0, 0])
-        
-        if bird.rct.colliderect(bomb.rct):
-            # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-            bird.change_img(8, screen)
-            pg.display.update()
-            time.sleep(1)
-            return
+
+        if bomb is not None:
+            if bird.rct.colliderect(bomb.rct):
+                # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
+                bird.change_img(8, screen)
+                pg.display.update()
+                time.sleep(1)
+                return
+            
+        if beam is not None:
+            if bomb is not None:
+                if beam.rct.colliderect(bomb.rct):
+                    beam,bomb = None, None
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
+
         if beam is not None:
             beam.update(screen)   
-        bomb.update(screen)
+
+        if bomb is not None:
+            bomb.update(screen)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
